@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_page">
+    <sys_ui_page action="INSERT_OR_UPDATE">
+        <category>general</category>
+        <client_script/>
+        <description/>
+        <direct>false</direct>
+        <endpoint>x_340473_itunesres_searchResult.do</endpoint>
+        <html><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null">
+	<g:ui_form>
+		<table>
+			<tr>
+				<td>
+					<g:ui_input_field
+									  label="検索ワード"
+									  name="searchInput"
+									  value="${searchWord}"
+									  size="50"/>
+				</td>
+				<td>
+					<g:ui_button>検索</g:ui_button>
+				</td>
+			</tr>
+		</table>
+	</g:ui_form>
+	
+	<div id="resultList">
+	
+	<iframe src="x_340473_itunesres_tracklist_list.do?sysparm_query=runid=${runid}"
+			style="min-height:1024px;width:100%;"
+			scrolling="no"
+			frameborder="0">
+	</iframe>
+	</div>
+	
+</j:jelly>]]></html>
+        <name>searchResult</name>
+        <processing_script><![CDATA[try { 
+ var r = new sn_ws.RESTMessageV2('iTunesSearch', 'Default GET');
+
+ var searchWord = searchInput;
+ gs.info('searchWord = ' + searchWord);
+ 
+ r.setStringParameterNoEscape('attribute', 'artistTerm');
+ r.setStringParameterNoEscape('country', 'jp');
+ r.setStringParameterNoEscape('media', 'music');
+ r.setStringParameterNoEscape('lang', 'ja_jp');
+ r.setStringParameterNoEscape('term', searchWord);
+
+//override authentication profile 
+//authentication type ='basic'/ 'oauth2'
+//r.setAuthenticationProfile(authentication type, profile name);
+
+//set a MID server name if one wants to run the message on MID
+//r.setMIDServer('MY_MID_SERVER');
+
+//if the message is configured to communicate through ECC queue, either
+//by setting a MID server or calling executeAsync, one needs to set skip_sensor
+//to true. Otherwise, one may get an intermittent error that the response body is null
+//r.setEccParameter('skip_sensor', true);
+
+ var response = r.execute();
+ var responseBody = response.getBody();
+ var httpStatus = response.getStatusCode();
+
+ var parser = new global.JSON();
+ var parsed = parser.decode(responseBody);
+	
+	var gr = new GlideRecord('x_340473_itunesres_tracklist');
+	var runid = gs.generateGUID();
+	
+	for(var i=0; i<parsed.results.length; i++) {
+		var result = parsed.results[i];
+		gr.initialize();
+		
+		gr.setValue('track_name', result.trackName);
+		gr.setValue('art_work', result.artworkUrl60);
+		gr.setValue('runid', runid);
+		gr.setValue('search_word', searchWord);
+		
+		gr.insert();
+		
+	}
+	
+	
+}
+catch(ex) {
+ var message = ex.message;
+}]]></processing_script>
+        <sys_class_name>sys_ui_page</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-05-16 10:55:18</sys_created_on>
+        <sys_id>53b619c02fe13300cf2bc886f699b617</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>searchResult</sys_name>
+        <sys_package display_value="itunesRestSearch" source="x_340473_itunesres">e9b255002fe13300cf2bc886f699b6d7</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="itunesRestSearch">e9b255002fe13300cf2bc886f699b6d7</sys_scope>
+        <sys_update_name>sys_ui_page_53b619c02fe13300cf2bc886f699b617</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-05-16 10:55:18</sys_updated_on>
+    </sys_ui_page>
+</record_update>

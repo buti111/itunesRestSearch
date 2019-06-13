@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element label="tracklist" max_length="40" name="x_340473_itunesres_tracklist" type="collection">
+        <element label="Art Work" max_length="1024" name="art_work" type="url"/>
+        <element label="runid" max_length="50" name="runid" type="string_full_utf8"/>
+        <element label="Search Word" max_length="200" name="search_word" type="string_full_utf8"/>
+        <element label="Track Name" max_length="200" name="track_name" type="string_full_utf8"/>
+    </element>
+</database>
